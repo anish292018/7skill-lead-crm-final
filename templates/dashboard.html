@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>7Skill Academy – Lead Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page wide">
+    <h1 class="title">7Skill Academy – Lead Dashboard</h1>
+    <a href="/" class="link-back">← Back to Lead Form</a>
+
+    <h2 class="subtitle">Saved Leads</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>PHONE</th>
+            <th>SOURCE</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+          <tr>
+            <td>{{ lead[0] }}</td>
+            <td>{{ lead[1] }}</td>
+            <td>{{ lead[2] }}</td>
+            <td>{{ lead[3] }}</td>
+            <td>
+              <button class="btn-danger" onclick="deleteLead({{ lead[0] }})">Delete</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function deleteLead(id) {
+      if (!confirm('Delete this lead?')) return;
+      const res = await fetch(`/delete_lead/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) location.reload();
+    }
+  </script>
+</body>
+</html>

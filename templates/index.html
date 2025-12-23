@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>7Skill Academy Lead Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="page">
+    <h1 class="title">7Skill Academy Lead Form</h1>
+
+    <!-- Message box (success / error) -->
+    <div id="msgBox" class="alert" style="display:none;"></div>
+
+    <div class="card">
+      <form id="leadForm">
+
+        <div class="field">
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter name"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label>Phone:</label>
+          <input
+            type="text"
+            name="phone"
+            placeholder="Enter 10 digit phone"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label>Source:</label>
+          <input
+            type="text"
+            name="source"
+            placeholder="Instagram / Facebook / Website / LinkedIn"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">
+          Submit
+        </button>
+
+      </form>
+    </div>
+
+    <a href="/dashboard" class="link-red">View Dashboard</a>
+  </div>
+
+  <!-- JS: handles submit, messages, and button state -->
+  <script>
+    const form = document.getElementById('leadForm');
+    const btn = document.getElementById('submitBtn');
+    const msgBox = document.getElementById('msgBox');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // reset message
+      msgBox.style.display = "none";
+      msgBox.className = "alert";
+
+      // button loading state
+      btn.disabled = true;
+      btn.innerText = "Saving...";
+
+      const data = {
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        source: form.source.value.trim()
+      };
+
+      try {
+        const res = await fetch('/submit_lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        msgBox.innerText = result.message || (result.success ? "Lead saved successfully!" : "Failed to save lead");
+        msgBox.className = result.success ? "alert success" : "alert error";
+        msgBox.style.display = "block";
+
+        if (result.success) {
+          form.reset();
+        }
+
+      } catch (err) {
+        msgBox.innerText = "Something went wrong. Please try again.";
+        msgBox.className = "alert error";
+        msgBox.style.display = "block";
+      }
+
+      // reset button
+      btn.disabled = false;
+      btn.innerText = "Submit";
+    });
+  </script>
+
+</body>
+</html>
+
